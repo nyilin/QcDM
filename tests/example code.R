@@ -1,12 +1,3 @@
-#path = choose.dir()
-source('C:/Users/chenying/Dropbox/QcDM_collab/QcDM/R/DataScrubbing.R')
-source('C:/Users/chenying/Dropbox/QcDM_collab/QcDM/R/PerformExclusion.R')
-source('C:/Users/chenying/Dropbox/QcDM_collab/QcDM/R/FormatDate.R')
-source('C:/Users/chenying/Dropbox/QcDM_collab/QcDM/R/GenEpisode.R')
-source('C:/Users/chenying/Dropbox/QcDM_collab/QcDM/R/GenGluM.R')
-source('C:/Users/chenying/Dropbox/QcDM_collab/QcDM/R/recogniseDateTime.R')
-source('C:/Users/chenying/Dropbox/QcDM_collab/QcDM/R/GenGluTable.R')
-
 library(data.table)
 library(Matching)
 library(lmtest)
@@ -19,8 +10,8 @@ wkdir <- "C:/Users/chenying/Desktop/qcDMData"
 input <- list(wkdir = wkdir, #choose.dir(),
               hypo3 = 2, hypo2 = 3,	hypo1 = 4,	hyper3 = 14,	hyper2 = 20,
               hyper1 = 24,	normalrange_lower = 4,	normalrange_upper = 10,
-              lgZERO = -5, ageRange = c(16, 120), exclude = c(1, 2), 
-              wardselect = c("A", "B", "C"), 
+              lgZERO = -5, ageRange = c(16, 120), exclude = c(1, 2),
+              wardselect = c("A", "B", "C"),
               monthselect = 1:6, yearselect = 2015)
 # units <- c("A","B","C")
 wards <- dir(paste0(input$wkdir, "/GLU_data"))
@@ -71,7 +62,7 @@ preDatList <- lapply(
         }else{
           colnames(data) <- c("PATIENT.NO", "RESULT", "RESULT.DATE", "LOCATION","caseid")
         }
-        
+
         FormatDate(data, yy = substring(yy, 3, 4), mm = m)
       })
     do.call("rbind", datList)

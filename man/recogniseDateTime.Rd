@@ -2,31 +2,36 @@
 % Please edit documentation in R/recogniseDateTime.R
 \name{recogniseDateTime}
 \alias{recogniseDateTime}
-\title{Recognise date and time}
+\title{Recognise date-time variables when month and year are known (otherwise there
+is no way to differentiate date and month)}
 \usage{
-recogniseDateTime(dateTime, month, year)
+recogniseDateTime(dateTime, month, year, time_dummy = "11:11:11")
 }
 \arguments{
-\item{dateTime}{A single time point satisfying the assumptions, see details.}
+\item{dateTime}{a vector of strings indicating the date and time that satisfy
+the assumptions specified in the Details section.}
 
-\item{month}{A number (1 to 12) indicating the month this time point is in}
+\item{month}{a number (1 to 12) indicating the month this time point is in.}
 
-\item{year}{A number (00 to 99) indicating the year this time point is in}
+\item{year}{a number (with 4 digits) indicating the year this time point is in.}
+
+\item{time_dummy}{a dummy time assigned to date-time variables when time is
+not available. Default is 11:11:11.}
 }
 \value{
-Returns a character variable of the format %d/%m/%y %H:%M:%S
+Returns a string vector of the format %d/%m/%Y %H:%M:%S.
 }
 \description{
-Recognise date and time when month and year are known (otherwise
-  there is no way to differentiate date and month)
+Recognise date-time variables when month and year are known (otherwise there
+is no way to differentiate date and month)
 }
 \details{
 Assumptions made on the format of input time are:
-- only "/" or "-" is used to separate date, month and year, and no mixture
- of the two symbols in a single time variable
-- only ":" is used to separate hour, minute and second, and the order is
-  always in "h:m:s" (second can be missing, but not minute or hour)
-- a dateTime variable should contain both date and time
+(i) only "/" or "-" is used to separate date, month and year, and no mixture
+ of the two symbols in a single time variable;
+(ii) only ":" is used to separate hour, minute and second, and the order is
+  always in "h:m:s" (second can be missing, but not minute or hour); and
+(iii) a dateTime variable should contain both date and time.
 }
 \author{
 Yilin Ning, Ying Chen

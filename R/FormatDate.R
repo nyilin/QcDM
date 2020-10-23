@@ -15,16 +15,18 @@
 #' \item{RESULT.DATE} an object of classes \dQuote{POSIXlt} and \dQuote{POSIXct} representing calender date and times.
 #'  }
 #'
-#' @author Ying Chen 
+#' @author Ying Chen
 #' @export
 FormatDate <- function(dat, yy, mm) {
   dat = data.table(dat)
-  dat[, Result.Date := recogniseDateTime(RESULT.DATE, mm, yy), by = RESULT.DATE] # need to specify month and year
+  dat[, Result.Date := recogniseDateTime(dateTime = RESULT.DATE,
+                                         month = mm, year = yy),
+      by = RESULT.DATE] # need to specify month and year
   dat[, RESULT.DATE := Result.Date]
   dat[, Result.Date := NULL]
   tmp <- dat
   tmp1 <- Sys.time()
-  tmp1 = as.POSIXct(strptime(tmp$RESULT.DATE, "%d/%m/%y %H:%M:%S"))
+  tmp1 = as.POSIXct(strptime(tmp$RESULT.DATE, "%d/%m/%Y %H:%M:%S"))
   #id = which(is.na(tmp1))
   tmp$RESULT.DATE = tmp1
   dat = tmp
