@@ -1,29 +1,39 @@
 #' @title Apply exclusion criterion to data
 #' @description By default, there are three criterion, age criterion, duration
 #'   criterion, and frequency criterion.
-#' @param preDat  A \emph{data.table} which should be the output of
-#'   \code{\link{GenEpisode}}
+#' @param preDat A \emph{data.table} prepared by \code{\link{GenEpisode}}.
 #' @param crtVec A boolean vector of length 3, indicating whether to exclude
 #'   patients by length of stay, frequency of BG measurements, and whether to
 #'   exclude the readings taken within the first 24 hours.
 #' @param ageRange A vector specifying the age range. Any patient younger than
 #'   the minimum age or older than the maximum age should be excluded. This
 #'   exclusion criterion requires the data to have a BIRTH.DATE column or an AGE
-#'   column, otherwise it will be ingored.
-#' @param losNum_hour A number specifying the length of stay criterion. A hospital stay need to be 
-#'   greater than this value to be included in the analysis. This is an optional exclusion criterion. 
-#' @param freqNum A numeric value specifying the smallest frequency of BG within a hospital stay 
-#'   needed for the analysis. This is an optional criterion.
+#'   column, otherwise it will be ignored.
+#' @param losNum_hour A number specifying the length of stay criterion. A
+#'   hospital stay need to be greater than this value to be included in the
+#'   analysis. This is an optional exclusion criterion.
+#' @param freqNum A numeric value specifying the smallest frequency of BG within
+#'   a hospital stay needed for the analysis. This is an optional criterion.
+#' @return Returns a list with a vector of exclusion criteria and the
+#'   \emph{data.table} after applying exclusion criteria.
+#' @examples
+#' # First prepare data using GenEpisode:
+#' data("gluDat")
+#' gluDat2 <- FormatDate(dat = gluDat, yy = 2016, mm = 7)
+#' gluDat3_ls <- DataScrubbing(dat = gluDat2, unitVal = 1)
+#' gluDat4 <- GenEpisode(dat = gluDat3_ls$dat, epiMethod = "Admininfo")
+#' # Create an "AGE" column with all values assigned to "AGE" to indicate that age
+#' # is not available in this data:
+#' gluDat4$AGE <- "AGE"
+#' # Then apply exclusion criteria:
+#' exlList <- PerformExclusion(preDat = gluDat4)
+#' exlList
 #' @author Ying Chen
 #' @export
-
-
-##==== Modification @19 June 2018
-## 
 PerformExclusion <- function(preDat, crtVec = c(crt.los = TRUE, crt.freq = TRUE,
                                                 crt.1stday = TRUE),
                              ageRange = c(16, 120),
-                             losNum_hour = 24, 
+                             losNum_hour = 24,
                              freqNum = 5) {
   # Follow the exclusion criterion
   # so crtVec is an logic vector where each entry tells whether to perform the

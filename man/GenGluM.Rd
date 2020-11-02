@@ -7,30 +7,55 @@
 GenGluM(dat, hypocutoffs, hypercutoffs, normalrange, hgicutoff, unitVal)
 }
 \arguments{
-\item{dat}{A \emph{data.table} prepared by \code{GenEpisode}}
+\item{dat}{A \emph{data.table} prepared by \code{\link{GenEpisode}}.}
 
-\item{hypocutoffs}{A vector of numeric values indicating the recommened
-cutoffs for hypoglycemia, from mild, moderate to severe hypoglycemia. Hypoglycemia is defined as less than the specified cutoff value.}
+\item{hypocutoffs}{A vector of numeric values indicating the recommended
+cutoffs for hypoglycemia, from mild, moderate to severe hypoglycemia.
+Hypoglycemia is defined as less than the specified cutoff value.}
 
-\item{hypercutoffs}{A vector of numeric values indicating the recommened
-cutoffs for hyperglycemia, from mild, moderate to severe hyperglycemia. Hyperglycemia is defined as no less than the specified cutoff value.}
+\item{hypercutoffs}{A vector of numeric values indicating the recommended
+cutoffs for hyperglycemia, from mild, moderate to severe hyperglycemia.
+Hyperglycemia is defined as no less than the specified cutoff value.}
 
-\item{normalrange}{A vector of numeric values indicating the recommened range
+\item{normalrange}{A vector of numeric values indicating the recommended range
 for normal glycemia, where the first value is the lower range, and the
-second value is the upper range. A BG is considered in recommended range if it is no less than a lower bound and less than a upper bound at the same time. 
-@param hgicutoff A numeric value indicating the cutoff used for calculating hyperglycemic index (HGI).
-@param unitVal A unit indicator. 1 stands for mmol/L, 2 stands for md/dL}
+second value is the upper range. A BG is considered in recommended range if
+it is no less than a lower bound and less than a upper bound at the same
+time.}
+
+\item{hgicutoff}{A numeric value indicating the cutoff used for calculating
+hyperglycemic index (HGI).}
+
+\item{unitVal}{A unit indicator. 1 stands for mmol/L, 2 stands for md/dL}
 }
 \value{
-A list having three dataframes
+Returns a list of three data.frames:
 \itemize{
-\item{popstat} A vector of all the indices at population level
-\item{patientdaystat} A vector of all the indices at patient day level
-\item{peradmissionstat} A vector of all the indices at admission level
+  \item{\code{popstat}:} A vector of all the indices at population level
+  \item{\code{patientdaystat}:} A vector of all the indices at patient day level
+  \item{\code{peradmissionstat}:} A vector of all the indices at admission level
 }
+which will be used as input to generate glucometrics tables.
 }
 \description{
-Generate glucometrics for specific ward/wards during specified time period
+Generate glucometrics for specific ward/wards during specified
+  time period
+}
+\examples{
+# First prepare example data using GenEpisode:
+data("gluDat")
+gluDat2 <- FormatDate(dat = gluDat, yy = 2016, mm = 7)
+gluDat3_ls <- DataScrubbing(dat = gluDat2, unitVal = 1)
+gluDat4 <- GenEpisode(dat = gluDat3_ls$dat, epiMethod = "Admininfo")
+# Then generate glucometrics:
+metricList <- GenGluM(dat = gluDat4, hypocutoffs = c(4, 3, 2.5),
+                      hypercutoffs = c(14, 20, 24), normalrange = c(4, 10),
+                      hgicutoff = 10, unitVal = 1)
+# View glucometrics (round to 1 decimal place):
+lapply(metricList, function(m) round(m, 1))
+}
+\seealso{
+\code{\link{ProGluTable}}
 }
 \author{
 Ying Chen, Chuen Seng Tan

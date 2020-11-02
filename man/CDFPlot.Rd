@@ -7,7 +7,7 @@
 CDFPlot(dat)
 }
 \arguments{
-\item{dat, }{as in \code{\link{PerformExclusion}}.}
+\item{dat}{A \emph{data.table} prepared by \code{\link{GenEpisode}}.}
 }
 \description{
 Plot the cumulative distribution of daily blood glucose timings

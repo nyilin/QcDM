@@ -7,13 +7,24 @@
 GenHypoIntervals(dat)
 }
 \arguments{
-\item{dat}{A \emph{data.table} prepared by \code{\link{DataScrubbing}}}
+\item{dat}{A \emph{data.table} prepared by \code{\link{GenEpisode}}.}
 }
 \value{
-A \emph{list} contains the time intervals.
+A \emph{list} containing the time intervals.
 }
 \description{
-There are three types of intervals: hypo to next documented BG, hypo to resoultion of hypo, and resolution of hypo to next documented hypo. This function will calculate these intervals.
+There are three types of intervals: hypo to next documented BG,
+  hypo to resolution of hypo, and resolution of hypo to next documented hypo.
+  This function will calculate these intervals.
+}
+\examples{
+# First prepare example data using GenEpisode:
+data("gluDat")
+gluDat2 <- FormatDate(dat = gluDat, yy = 2016, mm = 7)
+gluDat3_ls <- DataScrubbing(dat = gluDat2, unitVal = 1)
+gluDat4 <- GenEpisode(dat = gluDat3_ls$dat, epiMethod = "Admininfo")
+# Then generate hypo intervals:
+GenHypoIntervals(dat = gluDat4)
 }
 \author{
 Ying Chen

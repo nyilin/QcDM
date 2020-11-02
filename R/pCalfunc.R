@@ -14,7 +14,7 @@
 #' @title Calculating KS p-values
 #' @description This function performs one-sample Kolmogorov-Smirnov test of the distribution of
 #' daily BG timings against uniformation distribution, and two-sample Kolmogorov-Smirnov test for
-#' the distributions of BG timings from two consecutive days, and provides p-values. 
+#' the distributions of BG timings from two consecutive days, and provides p-values.
 #' @param dat A \emph{data.table} prepared by \code{datapreparation}
 #' @return A \emph{data.frame} with columns being
 #'   \itemize{
@@ -34,9 +34,12 @@
 #'   }
 #'
 #' @author Tan Chuen Seng, Chen Ying
-#' @export
 pCalfunc <- function(dat){
-   dat[, weekd := as.numeric(format(.SD$RESULT.DATE, "%u"))] # give the day of the week in 1 to 7
+  pkgs <- installed.packages()
+  if (!all(c("lmtest", "Matching") %in% pkgs[, "Package"])) {
+    stop(simpleError("This function requires additional packages: 'lmtest' and 'Matching'."))
+  }
+  dat[, weekd := as.numeric(format(.SD$RESULT.DATE, "%u"))] # give the day of the week in 1 to 7
   dat[, weekn := as.numeric(format(.SD$RESULT.DATE, "%W"))] # give the week of the year from 1 to 53
   dat[, mond := as.numeric(format(.SD$RESULT.DATE, "%e"))] # give the day of the month from 01 to 31
   dat[, yday := as.numeric(format(.SD$RESULT.DATE, "%j"))] # give the day of the year, a number in 1 to 366
@@ -89,7 +92,7 @@ pCalfunc <- function(dat){
     if(all(test1, test2)){
       day2=as.data.frame(all.list[i])
       day1=as.data.frame(all.list[i-1])
-      out<-ks.boot(as.numeric(day1$hour),as.numeric(day2$hour),nboots=1000)
+      out<-Matching::ks.boot(as.numeric(day1$hour),as.numeric(day2$hour),nboots=1000)
       tmp=out$ks.boot.pvalue
       tmp1=out$ks$p.value
       tmp2=out$ks$statistic
@@ -110,7 +113,7 @@ pCalfunc <- function(dat){
       tmp=dat[c(j,j-1)]
       fit1=glm(tmp~1,family="poisson")
       fit=glm(tmp~tmp1,family="poisson")
-      p.val.2lr=c(p.val.2lr,lrtest(fit,fit1)[[5]][2])
+      p.val.2lr=c(p.val.2lr,lmtest::lrtest(fit,fit1)[[5]][2])
     }else{
       p.val.2lr=c(p.val.2lr,NA)
     }

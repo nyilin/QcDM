@@ -1,8 +1,7 @@
 #' @title Cumulative distribution function plot
 #' @description Plot the cumulative distribution of daily blood glucose timings
-#' @param dat, as in \code{\link{PerformExclusion}}.
+#' @param dat A \emph{data.table} prepared by \code{\link{GenEpisode}}.
 #' @author Ying Chen, Chuen Seng Tan
-#' @export
 CDFPlot <- function(dat){
   par(mfrow=c(2,2),oma=c(0,0,0,0),mar=c(4,2,1,2)+0.5)
   nn=c(1,2,23,24)

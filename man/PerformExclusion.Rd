@@ -13,8 +13,7 @@ PerformExclusion(
 )
 }
 \arguments{
-\item{preDat}{A \emph{data.table} which should be the output of
-\code{\link{GenEpisode}}}
+\item{preDat}{A \emph{data.table} prepared by \code{\link{GenEpisode}}.}
 
 \item{crtVec}{A boolean vector of length 3, indicating whether to exclude
 patients by length of stay, frequency of BG measurements, and whether to
@@ -23,17 +22,35 @@ exclude the readings taken within the first 24 hours.}
 \item{ageRange}{A vector specifying the age range. Any patient younger than
 the minimum age or older than the maximum age should be excluded. This
 exclusion criterion requires the data to have a BIRTH.DATE column or an AGE
-column, otherwise it will be ingored.}
+column, otherwise it will be ignored.}
 
-\item{losNum_hour}{A number specifying the length of stay criterion. A hospital stay need to be 
-greater than this value to be included in the analysis. This is an optional exclusion criterion.}
+\item{losNum_hour}{A number specifying the length of stay criterion. A
+hospital stay need to be greater than this value to be included in the
+analysis. This is an optional exclusion criterion.}
 
-\item{freqNum}{A numeric value specifying the smallest frequency of BG within a hospital stay 
-needed for the analysis. This is an optional criterion.}
+\item{freqNum}{A numeric value specifying the smallest frequency of BG within
+a hospital stay needed for the analysis. This is an optional criterion.}
+}
+\value{
+Returns a list with a vector of exclusion criteria and the
+  \emph{data.table} after applying exclusion criteria.
 }
 \description{
 By default, there are three criterion, age criterion, duration
   criterion, and frequency criterion.
+}
+\examples{
+# First prepare data using GenEpisode:
+data("gluDat")
+gluDat2 <- FormatDate(dat = gluDat, yy = 2016, mm = 7)
+gluDat3_ls <- DataScrubbing(dat = gluDat2, unitVal = 1)
+gluDat4 <- GenEpisode(dat = gluDat3_ls$dat, epiMethod = "Admininfo")
+# Create an "AGE" column with all values assigned to "AGE" to indicate that age
+# is not available in this data:
+gluDat4$AGE <- "AGE"
+# Then apply exclusion criteria:
+exlList <- PerformExclusion(preDat = gluDat4)
+exlList
 }
 \author{
 Ying Chen

@@ -12,21 +12,27 @@ FormatDate(dat, yy, mm)
 \item{RESULT.DATE} an object of classes have information calender date and times
 }}
 
-\item{yy}{A numeric value specifies the year without centuries of the data set.}
+\item{yy}{A numeric value specifies the year of the data set.}
 
 \item{mm}{A numeric value specifies the month of the data set.}
 }
 \value{
 A \emph{data.table}, has at least one key variable:
 \itemize{
-\item{RESULT.DATE} an object of classes \dQuote{POSIXlt} and \dQuote{POSIXct} representing calender date and times.
- }
+\item{RESULT.DATE} an object of classes \dQuote{POSIXlt} and \dQuote{POSIXct}
+  representing calender date and times.
+}
 }
 \description{
-Format date variable from character to R class \dQuote{POSIXct} so that we can manipulate with date variables
+Format date variable from character to R class \dQuote{POSIXct}
+  so that we can manipulate with date variables
 }
-\details{
-none
+\examples{
+# Load example data
+data("gluDat")
+head(gluDat)
+gluDat2 <- FormatDate(dat = gluDat, yy = 2016, mm = 7)
+head(gluDat2)
 }
 \author{
 Ying Chen
