@@ -11,8 +11,25 @@ ProGluTable(metricList, unitVal)
 
 \item{unitVal}{A unit indicator. 1 stands for mmol/L, 2 stands for md/dL}
 }
+\value{
+Returns a list containing a table summarising the number of
+  patient-days and patient-stays with glucose reading in prespecified ranges,
+  and a vector containing footnotes to this table.
+}
 \description{
-Mainly used to produce glucometrics table
+Produce Glucometrics table
+}
+\examples{
+# First generate glucometrics using GenGluM:
+data("gluDat")
+gluDat2 <- FormatDate(dat = gluDat, yy = 2016, mm = 7)
+gluDat3_ls <- DataScrubbing(dat = gluDat2, unitVal = 1)
+gluDat4 <- GenEpisode(dat = gluDat3_ls$dat, epiMethod = "Admininfo")
+metricList <- GenGluM(dat = gluDat4, hypocutoffs = c(4, 3, 2.5),
+                      hypercutoffs = c(14, 20, 24), normalrange = c(4, 10),
+                      hgicutoff = 10, unitVal = 1)
+# Then generate glucometrics table:
+ProGluTable(metricList = metricList, unitVal = 1)
 }
 \author{
 Ying Chen, Mark Salloway

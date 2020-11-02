@@ -1,37 +1,50 @@
 #' @title Generate glucometrics
 #'
-#' @description Generate glucometrics for specific ward/wards during specified time period
+#' @description Generate glucometrics for specific ward/wards during specified
+#'   time period
 #'
-#' @param dat A \emph{data.table} prepared by \code{GenEpisode}
-#' @param hypocutoffs A vector of numeric values indicating the recommened
-#'   cutoffs for hypoglycemia, from mild, moderate to severe hypoglycemia. Hypoglycemia is defined as less than the specified cutoff value. 
-#' @param  hypercutoffs A vector of numeric values indicating the recommened
-#'   cutoffs for hyperglycemia, from mild, moderate to severe hyperglycemia. Hyperglycemia is defined as no less than the specified cutoff value.
-#' @param normalrange A vector of numeric values indicating the recommened range
+#' @param dat A \emph{data.table} prepared by \code{\link{GenEpisode}}.
+#' @param hypocutoffs A vector of numeric values indicating the recommended
+#'   cutoffs for hypoglycemia, from mild, moderate to severe hypoglycemia.
+#'   Hypoglycemia is defined as less than the specified cutoff value.
+#' @param  hypercutoffs A vector of numeric values indicating the recommended
+#'   cutoffs for hyperglycemia, from mild, moderate to severe hyperglycemia.
+#'   Hyperglycemia is defined as no less than the specified cutoff value.
+#' @param normalrange A vector of numeric values indicating the recommended range
 #'   for normal glycemia, where the first value is the lower range, and the
-#'   second value is the upper range. A BG is considered in recommended range if it is no less than a lower bound and less than a upper bound at the same time. 
-#'   @param hgicutoff A numeric value indicating the cutoff used for calculating hyperglycemic index (HGI).
-#'   @param unitVal A unit indicator. 1 stands for mmol/L, 2 stands for md/dL
+#'   second value is the upper range. A BG is considered in recommended range if
+#'   it is no less than a lower bound and less than a upper bound at the same
+#'   time.
+#' @param hgicutoff A numeric value indicating the cutoff used for calculating
+#'   hyperglycemic index (HGI).
+#' @param unitVal A unit indicator. 1 stands for mmol/L, 2 stands for md/dL
 #'
-#' @return A list having three dataframes
+#' @return Returns a list of three data.frames:
 #' \itemize{
-#' \item{popstat} A vector of all the indices at population level
-#' \item{patientdaystat} A vector of all the indices at patient day level
-#' \item{peradmissionstat} A vector of all the indices at admission level
+#'   \item{\code{popstat}:} A vector of all the indices at population level
+#'   \item{\code{patientdaystat}:} A vector of all the indices at patient day level
+#'   \item{\code{peradmissionstat}:} A vector of all the indices at admission level
 #' }
-#'
+#' which will be used as input to generate glucometrics tables.
+#' @examples
+#' # First prepare example data using GenEpisode:
+#' data("gluDat")
+#' gluDat2 <- FormatDate(dat = gluDat, yy = 2016, mm = 7)
+#' gluDat3_ls <- DataScrubbing(dat = gluDat2, unitVal = 1)
+#' gluDat4 <- GenEpisode(dat = gluDat3_ls$dat, epiMethod = "Admininfo")
+#' # Then generate glucometrics:
+#' metricList <- GenGluM(dat = gluDat4, hypocutoffs = c(4, 3, 2.5),
+#'                       hypercutoffs = c(14, 20, 24), normalrange = c(4, 10),
+#'                       hgicutoff = 10, unitVal = 1)
+#' # View glucometrics (round to 1 decimal place):
+#' lapply(metricList, function(m) round(m, 1))
+#' @seealso \code{\link{ProGluTable}}
 #' @author Ying Chen, Chuen Seng Tan
-#' @export
 #' @import data.table
-
-##====Modification @19 June 2018 by Ying Chen
-## hyper modified to non-strict inequality 
+#' @export
+## hyper modified to non-strict inequality
 ## normal range modified to strict inequality on the right side
-GenGluM <- function(dat,
-                    hypocutoffs,
-                    hypercutoffs,
-                    normalrange,
-                    hgicutoff, 
+GenGluM <- function(dat, hypocutoffs, hypercutoffs, normalrange, hgicutoff,
                     unitVal) {
   dat[, RESULT.DATE1 := as.POSIXct(substring(RESULT.DATE, 1, 10),
                                    format = "%Y-%m-%d")]# hours and minutes removed
@@ -120,7 +133,7 @@ GenGluM <- function(dat,
                                               cummin(LOS.PSUM.MIN)))]
     return(DT.hgi[, ifelse(is.nan(hgi), 0, hgi)])
   }
-  
+
   dat.oth <- dat[, list(hgi = max(computeHGI(.SD, hgicutoff))),
                  by = list(ADMISSION.ID,EPISODE.ID)]
 
@@ -130,7 +143,7 @@ GenGluM <- function(dat,
     FreqHypo1st = .SD[RESULT.MEAN < hypocutoffs[1], .N],
     FreqHypo2nd = .SD[RESULT.MEAN < hypocutoffs[2], .N],
     FreqHypo3rd = .SD[RESULT.MEAN < hypocutoffs[3], .N],
-    FreqHyper1st = .SD[RESULT.MEAN >= hypercutoffs[1], .N], 
+    FreqHyper1st = .SD[RESULT.MEAN >= hypercutoffs[1], .N],
     FreqHyper2nd = .SD[RESULT.MEAN >= hypercutoffs[2], .N],
     FreqHyper3rd = .SD[RESULT.MEAN >= hypercutoffs[3], .N],
     NormalRange = .SD[(RESULT.MEAN >= normalrange[1]) &
@@ -218,7 +231,7 @@ GenGluM <- function(dat,
             by = list(ADMISSION.ID,EPISODE.ID)], by = NULL)
   pNR <- sum(tmp$m >= normalrange[1] &
                (tmp$m < normalrange[2]))
-  
+
   epistatp1 = c(epistatp1_tmp[1:7],  pNR, epistatp1_tmp[9])
   names(epistatp1) <- c(names(epistatp1_tmp)[1:7],"NormalRange",names(epistatp1_tmp)[9])
   tmp[, `:=`(jindex = (jind * (m + s) ^ 2))]
@@ -272,3 +285,59 @@ GenGluM <- function(dat,
   names(out) <- c("PopStat", "PatDayStat", "PatEpiStat")
   return(out)
 }
+
+#' @title Batch process for glucometrics
+#' @description Internal function
+#' @inheritParams GenGluM
+#' @param span.months The number of months to aggregate by in the report, e.g.,
+#'   \code{span.months = 1} for monthly report, \code{span.months = 3} for
+#'   quarterly report and \code{span.months = 6} for half-annually report.
+#' @return Returns a list, where each item is an output from \code{\link{GenGluM}}.
+#' @seealso \code{\link{GenGluM}}
+#' @author Ying Chen, Yilin Ning
+bpg <- function(dat, span.months = 1, hypocutoffs, hypercutoffs, normalrange,
+                hgicutoff, unitVal){
+  # Batch process if individual ward results wanted
+  dat$Mon = format(dat$RESULT.DATE, "%Y%m") # A combination of YYYYMM gives the correct month.
+  months = sort(unique(dat$Mon))
+  if(length(months)%%span.months != 0 |(length(months) <= span.months)){
+    warning("You have less months than your specified span.months or the multiples of your specified span.months. Suggest try a smaller span.months.")
+  }
+  cutoff =  union(which((1:length(months))%%span.months == 0),length(months))
+
+  location = sort(unique(dat$LOCATION))
+  metricList = list()
+  for(i in 1:length(location)){
+    for(j in 1:length(cutoff)){
+      id = which(dat$LOCATION == location[i] &(dat$Mon <= months[cutoff[j]]))
+      dat.each = dat[id,]
+      dat = dat[-id, ]
+      # Generate glucometrics
+      metricList[[length(cutoff)*(i-1)+j]] = GenGluM(dat = dat.each, hypocutoffs = hypocutoffs, hypercutoffs = hypercutoffs, normalrange = normalrange, hgicutoff = hgicutoff, unitVal = unitVal) # it's ordered as ward1 month1 ward1 month2....
+    }
+  }
+  return(metricList)
+}
+
+
+# Line Plot of Glucometrics for individual ward of specified span of time.
+# From params are a vector of 3 digits numbers,
+# First digit: 1,2,3 represent population, patient-day or patient-episode
+# Second digit: 1,2,3, represent  hyper to glycemia variability to hypo
+# Last digit
+# Hyperglycemia: 1-3 to mild, moderate and sever hyper, 4-5 median or mean,
+#        6 for normal range, for patient-episode, there are  two extra ones,
+#        7 for weighted mean, 8-9 for hgi median and mean
+# Glycemia variability: 1-2 for SD median and mean, 3-4 for J-index median and mean,
+#           for population, only single estimates for SD and j-index, 2, and 4 are not used
+# Hypoglycemia: 1-3 for mild, moderate and severe hypo, for patient-episode, there is an 4 for recurrent hypo rates
+# location gives the ward names that correspond to the metricList and
+# lpg <- function(metricList, params = c(111,112,113,121,122,123), location, span.months, st, et, fileName = ""){
+#   st <- as.Date(start.date)
+#   en <- as.Date(end.date)
+#   ll <- format(seq(st, en, by = '1 month'),"%Y%m")
+#   cutoff =  union(which((1:length(ll))%%span.months == 0),length(ll))
+#   metricName <- data.frame(location = rep(location,each = length(cutoff), time = rep(1:length(cutoff),length(location))))
+#   mat <- matrix()
+# }
+
