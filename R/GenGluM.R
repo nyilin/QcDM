@@ -1,3 +1,74 @@
+#' Compute HGI
+#' @import data.table
+computeHGI <- function(DT, cutoff) {
+  #  Harry's code to compute HGI
+  # Generate dummy data table with left and right points
+  if (nrow(DT) < 2){
+    DT.hgi <- DT[, list(
+      LOS.PSUM.L = LOS.PSUM[1],
+      LOS.PSUM = LOS.PSUM,
+      LOS.PSUM.R = LOS.PSUM[.N],
+      LOS.PSUM.CUT.L = 0,
+      LOS.PSUM.M = 0,
+      LOS.PSUM.CUT.R = 0,
+      RESULT.MEAN.L = cutoff,
+      RESULT.MEAN = RESULT.MEAN,
+      RESULT.MEAN.R = cutoff,
+      RESULT.AREA.L = 0,
+      RESULT.AREA.M = 0,
+      RESULT.AREA.R = 0
+    )]
+  } else {
+    DT.hgi <- DT[, list(
+      LOS.PSUM.L = c(LOS.PSUM[1], LOS.PSUM[1:(.N - 1)]), # This requires DT to have at least 2 readings
+      LOS.PSUM = LOS.PSUM,
+      LOS.PSUM.R = c(LOS.PSUM[2:.N], LOS.PSUM[.N]),
+      LOS.PSUM.CUT.L = 0,
+      LOS.PSUM.M = 0,
+      LOS.PSUM.CUT.R = 0,
+      RESULT.MEAN.L = c(cutoff, RESULT.MEAN[1:(.N - 1)]),
+      RESULT.MEAN = RESULT.MEAN,
+      RESULT.MEAN.R = c(RESULT.MEAN[2:.N], cutoff),
+      RESULT.AREA.L = 0,
+      RESULT.AREA.M = 0,
+      RESULT.AREA.R = 0
+    )]
+  }
+  # Find area of all left triangles
+  DT.hgi[(RESULT.MEAN > cutoff) & (RESULT.MEAN.L <= cutoff),
+         LOS.PSUM.CUT.L := (LOS.PSUM + ((LOS.PSUM.L - LOS.PSUM) *
+                                          (RESULT.MEAN - cutoff) /
+                                          (RESULT.MEAN - RESULT.MEAN.L)
+         ))]
+  DT.hgi[(RESULT.MEAN > cutoff) & (RESULT.MEAN.L <= cutoff),
+         RESULT.AREA.L := (0.5 * (LOS.PSUM - LOS.PSUM.CUT.L) *
+                             (RESULT.MEAN - cutoff))]
+
+  # Find area of all right triangles
+  DT.hgi[(RESULT.MEAN > cutoff) & (RESULT.MEAN.R <= cutoff),
+         LOS.PSUM.CUT.R := (LOS.PSUM + ((LOS.PSUM.R - LOS.PSUM) *
+                                          (RESULT.MEAN - cutoff) /
+                                          (RESULT.MEAN - RESULT.MEAN.R)
+         ))]
+  DT.hgi[(RESULT.MEAN > cutoff) & (RESULT.MEAN.R <= cutoff),
+         RESULT.AREA.R := (0.5 * (LOS.PSUM.CUT.R - LOS.PSUM) *
+                             (RESULT.MEAN - cutoff))]
+
+  # Find area of all trapezoids
+  DT.hgi[(RESULT.MEAN > cutoff) & (RESULT.MEAN.R > cutoff),
+         RESULT.AREA.M := (0.5 * ((RESULT.MEAN.R - cutoff) +
+                                    (RESULT.MEAN - cutoff)) *
+                             (LOS.PSUM.R - LOS.PSUM))]
+
+  # Compute total over the range (cumulative)
+  DT.hgi[RESULT.MEAN > cutoff, LOS.PSUM.M := LOS.PSUM]
+  DT.hgi[, RESULT.AREA := (RESULT.AREA.L + RESULT.AREA.M + RESULT.AREA.R)]
+  DT.hgi[, LOS.PSUM.MIN := min(LOS.PSUM.CUT.L, LOS.PSUM.M, LOS.PSUM.CUT.R)]
+  DT.hgi[, LOS.PSUM.MAX := max(LOS.PSUM.CUT.L, LOS.PSUM.M, LOS.PSUM.CUT.R)]
+  DT.hgi[, hgi := (cumsum(RESULT.AREA) / (cummax(LOS.PSUM.MAX) -
+                                            cummin(LOS.PSUM.MIN)))]
+  return(DT.hgi[, ifelse(is.nan(hgi), 0, hgi)])
+}
 #' @title Generate glucometrics
 #'
 #' @description Generate glucometrics for specific ward/wards during specified
@@ -29,11 +100,10 @@
 #' @examples
 #' # First prepare example data using GenEpisode:
 #' data("gluDat")
-#' gluDat2 <- FormatDate(dat = gluDat, yy = 2016, mm = 7)
-#' gluDat3_ls <- DataScrubbing(dat = gluDat2, unitVal = 1)
-#' gluDat4 <- GenEpisode(dat = gluDat3_ls$dat, epiMethod = "Admininfo")
+#' gluDat2 <- FormatDate(dat = gluDat, yy = 2020, mm = 7)
+#' gluDat3 <- GenEpisode(dat = gluDat2, epiMethod = "Admininfo")
 #' # Then generate glucometrics:
-#' metricList <- GenGluM(dat = gluDat4, hypocutoffs = c(4, 3, 2.5),
+#' metricList <- GenGluM(dat = gluDat3, hypocutoffs = c(4, 3, 2.5),
 #'                       hypercutoffs = c(14, 20, 24), normalrange = c(4, 10),
 #'                       hgicutoff = 10, unitVal = 1)
 #' # View glucometrics (round to 1 decimal place):
@@ -57,82 +127,8 @@ GenGluM <- function(dat, hypocutoffs, hypercutoffs, normalrange, hgicutoff,
   # DOT: report the days of all the records
   dat[, RESULT.DATE1 := NULL]
   ##void RESULT.DATE1
-  setkey(dat, LOCATION, ADMISSION.ID,EPISODE.ID, DAY, DOT, RESULT.DATE)
+  setkey(dat, LOCATION, ADMISSION.ID, EPISODE.ID, DAY, DOT, RESULT.DATE)
   jind <- ifelse(unitVal==1, 0.324, 0.001)
-  #  Harry's code to compute HGI
-  computeHGI <- function(DT, cutoff) {
-    # Generate dummy data table with left and right points
-
-    if(nrow(DT) < 2){
-      DT.hgi <- DT[, list(
-        LOS.PSUM.L = LOS.PSUM[1],
-        LOS.PSUM = LOS.PSUM,
-        LOS.PSUM.R = LOS.PSUM[.N],
-        LOS.PSUM.CUT.L = 0,
-        LOS.PSUM.M = 0,
-        LOS.PSUM.CUT.R = 0,
-        RESULT.MEAN.L = cutoff,
-        RESULT.MEAN = RESULT.MEAN,
-        RESULT.MEAN.R =  cutoff,
-        RESULT.AREA.L = 0,
-        RESULT.AREA.M = 0,
-        RESULT.AREA.R = 0
-      )]
-
-    }else{
-      DT.hgi <- DT[, list(
-        LOS.PSUM.L = c(LOS.PSUM[1], LOS.PSUM[1:(.N - 1)]), # This requires DT to have at least 2 readings
-        LOS.PSUM = LOS.PSUM,
-        LOS.PSUM.R = c(LOS.PSUM[2:.N], LOS.PSUM[.N]),
-        LOS.PSUM.CUT.L = 0,
-        LOS.PSUM.M = 0,
-        LOS.PSUM.CUT.R = 0,
-        RESULT.MEAN.L = c(cutoff, RESULT.MEAN[1:(.N - 1)]),
-        RESULT.MEAN = RESULT.MEAN,
-        RESULT.MEAN.R = c(RESULT.MEAN[2:.N], cutoff),
-        RESULT.AREA.L = 0,
-        RESULT.AREA.M = 0,
-        RESULT.AREA.R = 0
-      )]
-    }
-
-
-
-    # Find area of all left triangles
-    DT.hgi[(RESULT.MEAN > cutoff) & (RESULT.MEAN.L <= cutoff),
-           LOS.PSUM.CUT.L := (LOS.PSUM + ((LOS.PSUM.L - LOS.PSUM) *
-                                            (RESULT.MEAN - cutoff) /
-                                            (RESULT.MEAN - RESULT.MEAN.L)
-           ))]
-    DT.hgi[(RESULT.MEAN > cutoff) & (RESULT.MEAN.L <= cutoff),
-           RESULT.AREA.L := (0.5 * (LOS.PSUM - LOS.PSUM.CUT.L) *
-                               (RESULT.MEAN - cutoff))]
-
-    # Find area of all right triangles
-    DT.hgi[(RESULT.MEAN > cutoff) & (RESULT.MEAN.R <= cutoff),
-           LOS.PSUM.CUT.R := (LOS.PSUM + ((LOS.PSUM.R - LOS.PSUM) *
-                                            (RESULT.MEAN - cutoff) /
-                                            (RESULT.MEAN - RESULT.MEAN.R)
-           ))]
-    DT.hgi[(RESULT.MEAN > cutoff) & (RESULT.MEAN.R <= cutoff),
-           RESULT.AREA.R := (0.5 * (LOS.PSUM.CUT.R - LOS.PSUM) *
-                               (RESULT.MEAN - cutoff))]
-
-    # Find area of all trapezoids
-    DT.hgi[(RESULT.MEAN > cutoff) & (RESULT.MEAN.R > cutoff),
-           RESULT.AREA.M := (0.5 * ((RESULT.MEAN.R - cutoff) +
-                                      (RESULT.MEAN - cutoff)) *
-                               (LOS.PSUM.R - LOS.PSUM))]
-
-    # Compute total over the range (cumulative)
-    DT.hgi[RESULT.MEAN > cutoff, LOS.PSUM.M := LOS.PSUM]
-    DT.hgi[, RESULT.AREA := (RESULT.AREA.L + RESULT.AREA.M + RESULT.AREA.R)]
-    DT.hgi[, LOS.PSUM.MIN := min(LOS.PSUM.CUT.L, LOS.PSUM.M, LOS.PSUM.CUT.R)]
-    DT.hgi[, LOS.PSUM.MAX := max(LOS.PSUM.CUT.L, LOS.PSUM.M, LOS.PSUM.CUT.R)]
-    DT.hgi[, hgi := (cumsum(RESULT.AREA) / (cummax(LOS.PSUM.MAX) -
-                                              cummin(LOS.PSUM.MIN)))]
-    return(DT.hgi[, ifelse(is.nan(hgi), 0, hgi)])
-  }
 
   dat.oth <- dat[, list(hgi = max(computeHGI(.SD, hgicutoff))),
                  by = list(ADMISSION.ID,EPISODE.ID)]
@@ -285,59 +281,4 @@ GenGluM <- function(dat, hypocutoffs, hypercutoffs, normalrange, hgicutoff,
   names(out) <- c("PopStat", "PatDayStat", "PatEpiStat")
   return(out)
 }
-
-#' @title Batch process for glucometrics
-#' @description Internal function
-#' @inheritParams GenGluM
-#' @param span.months The number of months to aggregate by in the report, e.g.,
-#'   \code{span.months = 1} for monthly report, \code{span.months = 3} for
-#'   quarterly report and \code{span.months = 6} for half-annually report.
-#' @return Returns a list, where each item is an output from \code{\link{GenGluM}}.
-#' @seealso \code{\link{GenGluM}}
-#' @author Ying Chen, Yilin Ning
-bpg <- function(dat, span.months = 1, hypocutoffs, hypercutoffs, normalrange,
-                hgicutoff, unitVal){
-  # Batch process if individual ward results wanted
-  dat$Mon = format(dat$RESULT.DATE, "%Y%m") # A combination of YYYYMM gives the correct month.
-  months = sort(unique(dat$Mon))
-  if(length(months)%%span.months != 0 |(length(months) <= span.months)){
-    warning("You have less months than your specified span.months or the multiples of your specified span.months. Suggest try a smaller span.months.")
-  }
-  cutoff =  union(which((1:length(months))%%span.months == 0),length(months))
-
-  location = sort(unique(dat$LOCATION))
-  metricList = list()
-  for(i in 1:length(location)){
-    for(j in 1:length(cutoff)){
-      id = which(dat$LOCATION == location[i] &(dat$Mon <= months[cutoff[j]]))
-      dat.each = dat[id,]
-      dat = dat[-id, ]
-      # Generate glucometrics
-      metricList[[length(cutoff)*(i-1)+j]] = GenGluM(dat = dat.each, hypocutoffs = hypocutoffs, hypercutoffs = hypercutoffs, normalrange = normalrange, hgicutoff = hgicutoff, unitVal = unitVal) # it's ordered as ward1 month1 ward1 month2....
-    }
-  }
-  return(metricList)
-}
-
-
-# Line Plot of Glucometrics for individual ward of specified span of time.
-# From params are a vector of 3 digits numbers,
-# First digit: 1,2,3 represent population, patient-day or patient-episode
-# Second digit: 1,2,3, represent  hyper to glycemia variability to hypo
-# Last digit
-# Hyperglycemia: 1-3 to mild, moderate and sever hyper, 4-5 median or mean,
-#        6 for normal range, for patient-episode, there are  two extra ones,
-#        7 for weighted mean, 8-9 for hgi median and mean
-# Glycemia variability: 1-2 for SD median and mean, 3-4 for J-index median and mean,
-#           for population, only single estimates for SD and j-index, 2, and 4 are not used
-# Hypoglycemia: 1-3 for mild, moderate and severe hypo, for patient-episode, there is an 4 for recurrent hypo rates
-# location gives the ward names that correspond to the metricList and
-# lpg <- function(metricList, params = c(111,112,113,121,122,123), location, span.months, st, et, fileName = ""){
-#   st <- as.Date(start.date)
-#   en <- as.Date(end.date)
-#   ll <- format(seq(st, en, by = '1 month'),"%Y%m")
-#   cutoff =  union(which((1:length(ll))%%span.months == 0),length(ll))
-#   metricName <- data.frame(location = rep(location,each = length(cutoff), time = rep(1:length(cutoff),length(location))))
-#   mat <- matrix()
-# }
 

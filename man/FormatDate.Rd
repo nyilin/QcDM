@@ -31,7 +31,7 @@ Format date variable from character to R class \dQuote{POSIXct}
 # Load example data
 data("gluDat")
 head(gluDat)
-gluDat2 <- FormatDate(dat = gluDat, yy = 2016, mm = 7)
+gluDat2 <- FormatDate(dat = gluDat, yy = 2020, mm = 7)
 head(gluDat2)
 }
 \author{

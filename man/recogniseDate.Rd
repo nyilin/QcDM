@@ -2,7 +2,7 @@
 % Please edit documentation in R/FormatDate.R
 \name{recogniseDate}
 \alias{recogniseDate}
-\title{Recognise dates}
+\title{Recognise date}
 \usage{
 recogniseDate(date, month, year)
 }
@@ -14,8 +14,9 @@ recogniseDate(date, month, year)
 \item{year}{A number (with 4 digits) indicating the year this time point is in.}
 }
 \description{
-An alias to \code{recogniseDateTime} when time is not available.
-  Uses the default \code{time_dummy} parameter in \code{recogniseDateTime}.
+An alias to \code{\link{recogniseDateTime}} when time is not
+  available. Uses the default \code{time_dummy} parameter in
+  \code{recogniseDateTime}.
 }
 \examples{
 recogniseDate(c("02/04/2020", "04/18/20"), month = 4, year = 2020)

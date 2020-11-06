@@ -20,11 +20,10 @@ There are three types of intervals: hypo to next documented BG,
 \examples{
 # First prepare example data using GenEpisode:
 data("gluDat")
-gluDat2 <- FormatDate(dat = gluDat, yy = 2016, mm = 7)
-gluDat3_ls <- DataScrubbing(dat = gluDat2, unitVal = 1)
-gluDat4 <- GenEpisode(dat = gluDat3_ls$dat, epiMethod = "Admininfo")
+gluDat2 <- FormatDate(dat = gluDat, yy = 2020, mm = 7)
+gluDat3 <- GenEpisode(dat = gluDat2, epiMethod = "Admininfo")
 # Then generate hypo intervals:
-GenHypoIntervals(dat = gluDat4)
+GenHypoIntervals(dat = gluDat3)
 }
 \author{
 Ying Chen

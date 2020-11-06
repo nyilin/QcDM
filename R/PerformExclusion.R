@@ -19,14 +19,13 @@
 #' @examples
 #' # First prepare data using GenEpisode:
 #' data("gluDat")
-#' gluDat2 <- FormatDate(dat = gluDat, yy = 2016, mm = 7)
-#' gluDat3_ls <- DataScrubbing(dat = gluDat2, unitVal = 1)
-#' gluDat4 <- GenEpisode(dat = gluDat3_ls$dat, epiMethod = "Admininfo")
+#' gluDat2 <- FormatDate(dat = gluDat, yy = 2020, mm = 7)
+#' gluDat3 <- GenEpisode(dat = gluDat2, epiMethod = "Admininfo")
 #' # Create an "AGE" column with all values assigned to "AGE" to indicate that age
 #' # is not available in this data:
-#' gluDat4$AGE <- "AGE"
+#' gluDat3$AGE <- "AGE"
 #' # Then apply exclusion criteria:
-#' exlList <- PerformExclusion(preDat = gluDat4)
+#' exlList <- PerformExclusion(preDat = gluDat3)
 #' exlList
 #' @author Ying Chen
 #' @export

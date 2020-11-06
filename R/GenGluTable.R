@@ -2,15 +2,14 @@
 #' @param metricList A list of glucometrics, from \code{\link{GenGluM}}
 #' @param unitVal A unit indicator. 1 stands for mmol/L, 2 stands for md/dL
 #' @return Returns a list containing a table summarising the number of
-#'   patient-days and patient-stays with glucose reading in prespecified ranges,
+#'   patient-days and patient-stays with glucose reading in pre-specified ranges,
 #'   and a vector containing footnotes to this table.
 #' @examples
 #' # First generate glucometrics using GenGluM:
 #' data("gluDat")
-#' gluDat2 <- FormatDate(dat = gluDat, yy = 2016, mm = 7)
-#' gluDat3_ls <- DataScrubbing(dat = gluDat2, unitVal = 1)
-#' gluDat4 <- GenEpisode(dat = gluDat3_ls$dat, epiMethod = "Admininfo")
-#' metricList <- GenGluM(dat = gluDat4, hypocutoffs = c(4, 3, 2.5),
+#' gluDat2 <- FormatDate(dat = gluDat, yy = 2020, mm = 7)
+#' gluDat3 <- GenEpisode(dat = gluDat2, epiMethod = "Admininfo")
+#' metricList <- GenGluM(dat = gluDat3, hypocutoffs = c(4, 3, 2.5),
 #'                       hypercutoffs = c(14, 20, 24), normalrange = c(4, 10),
 #'                       hgicutoff = 10, unitVal = 1)
 #' # Then generate glucometrics table:
@@ -21,24 +20,22 @@ ProGluTable <- function(metricList, unitVal){
   # Input the list of metrics
   # Output the structured table.
   # unitVal <- c('mmol/L','md/dL')[unitVal]
-  # rname <- list(c("Number (count)",
-  #
-  #            paste("Percent with glucose >=",hypercutoffs[1],unitVal),
-  #            paste("Percent with glucose >=",hypercutoffs[2],unitVal),
-  #            paste("Percent with glucose >=",hypercutoffs[3],unitVal),
-  #             "Median HGI", "Mean HGI",
-  #            paste("Percent with glucose >=",normalrange[1]," and <",normalrange[2],unitVal)),
-  #            paste0("Median glucose (",unitVal,")"),
-  #            paste0("Mean glucose (",unitVal,")"),
-  #            paste0("Patient-day weighted median glucose (",unitVal,")"),
-  #            paste0("Patient-day weighted mean glucose (",unitVal,")"),
-  #            c(paste("Percent with glucose <",hypocutoffs[1],unitVal),
-  #              paste("Percent with glucose <",hypocutoffs[2],unitVal),
-  #              paste("Percent with glucose <",hypocutoffs[3],unitVal),
-  #              "Percent of patient-stays with a recurrent hypoglycemia day (10-240 mins)"),
-  #            c("Median SD", "Mean SD",
-  #              "Median J-index", "Mean J-index")
-  #            )
+  rname <- c("Number (count)",
+             paste("Percent with glucose >= hyper-cutoff1"),
+             paste("Percent with glucose >= hyper-cutoff2"),
+             paste("Percent with glucose >= hyper-cutoff3"),
+             "Median HGI", "Mean HGI",
+             paste("Percent with glucose in normal range"),
+             paste0("Median glucose"),
+             paste0("Mean glucose"),
+             paste0("Patient-day weighted median glucose"),
+             paste0("Patient-day weighted mean glucose"),
+             paste("Percent with glucose < hypo-cutoff1"),
+             paste("Percent with glucose < hypo-cutoff2"),
+             paste("Percent with glucose < hypo-cutoff3"),
+             "Percent of patient-stays with a recurrent hypoglycemia day (10-240 mins)",
+             "Median SD", "Mean SD",
+             "Median J-index", "Mean J-index")
   HyperFreqNR <- rbind(
     sapply(1:3,function(x) {return(metricList[[x]][grepl("Hyper1st",names(metricList[[x]]))])}),
     sapply(1:3,function(x) {return(metricList[[x]][grepl("Hyper2nd",names(metricList[[x]]))])}),
@@ -58,7 +55,7 @@ ProGluTable <- function(metricList, unitVal){
   HyperPropNR <- t(apply(HyperFreqNR, 1, function(x){return(x/TotFreq)}))
   HypoProp <- t(apply(HypoFreq, 1, function(x){return(x/TotFreq)}))
 
-  round_digits <- ifelse(unitVal==1,1,0)
+  round_digits <- ifelse(unitVal == 1,1,0)
   round_digits_p <-  1 # for percentage
   c1 <- round(c(metricList[[1]][grepl("popMedian",names(metricList[[1]]))],
                 metricList[[1]][grepl("popMean",names(metricList[[1]]))],
@@ -92,7 +89,7 @@ ProGluTable <- function(metricList, unitVal){
     sapply(2:3,function(x) {return(metricList[[x]][grepl("J3Q",names(metricList[[x]]))])}),
     sapply(2:3,function(x) {return(2*metricList[[x]][grepl("Jsd",names(metricList[[x]]))])})
   ),round_digits)
-  finTab <-matrix(paste0(eTab, " (",cTab2 - cTab1,")"),nrow(eTab),ncol(eTab),byrow = FALSE)
+  finTab <- matrix(paste0(eTab, " (",cTab2 - cTab1,")"),nrow(eTab),ncol(eTab),byrow = FALSE)
 
   eC2 <- round(c(metricList[[3]][grepl("Wmedian",names(metricList[[3]]))],
                  metricList[[3]][grepl("Wmean",names(metricList[[3]]))],
@@ -135,8 +132,9 @@ ProGluTable <- function(metricList, unitVal){
     cbind(rep("",4),finTab[3:6,])[1:2,],
     cbind(rep("",4),finTab[3:6,])[3:4,]
   )
-
-  message <-c(
+  rownames(table1) <- rname
+  colnames(table1) <- c("Patient-sample", "Patient-day#1", "Patient-stay#2")
+  message <- c(
     "*:The summary statistics of the glucometrics for patient-day means and patient-stay means.",
     paste0("#1: ",metricList[[2]]["NAinSD"]," (",
            round(metricList[[2]]["NAinSD"]/metricList[[2]]["FreqReading"]*100,2),

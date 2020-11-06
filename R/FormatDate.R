@@ -147,10 +147,10 @@ recogniseDateTime <- function(dateTime, month, year, time_dummy = "11:11:11") {
   names(date_time_vec) <- NULL
   date_time_vec
 }
-#' Recognise dates
-#' @description An alias to \code{recogniseDateTime} when time is not available.
-#'   Uses the default \code{time_dummy} parameter in \code{recogniseDateTime}.
-#' @describeIn recogniseDateTime
+#' Recognise date
+#' @description An alias to \code{\link{recogniseDateTime}} when time is not
+#'   available. Uses the default \code{time_dummy} parameter in
+#'   \code{recogniseDateTime}.
 #' @inheritParams recog_one_date
 #' @param date a string vector of dates.
 #' @examples
@@ -180,7 +180,7 @@ recogniseDate <- function(date, month, year) {
 #' # Load example data
 #' data("gluDat")
 #' head(gluDat)
-#' gluDat2 <- FormatDate(dat = gluDat, yy = 2016, mm = 7)
+#' gluDat2 <- FormatDate(dat = gluDat, yy = 2020, mm = 7)
 #' head(gluDat2)
 #' @author Ying Chen
 #' @import data.table
