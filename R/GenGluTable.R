@@ -133,7 +133,7 @@ ProGluTable <- function(metricList, unitVal){
     cbind(rep("",4),finTab[3:6,])[3:4,]
   )
   rownames(table1) <- rname
-  colnames(table1) <- c("Patient-sample", "Patient-day#1", "Patient-stay#2")
+  colnames(table1) <- c("Patient-sample", "Patient-day", "Patient-stay")
   message <- c(
     "*:The summary statistics of the glucometrics for patient-day means and patient-stay means.",
     paste0("#1: ",metricList[[2]]["NAinSD"]," (",

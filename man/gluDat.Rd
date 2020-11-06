@@ -12,7 +12,7 @@ A data frame with 4459 rows and 4 variables:
     entries are non-numeric by design.}
   \item{RESULT.DATE}{Date-time stamp of glucose readings, randomly generated
     to be within the calendar month of July 2020.}
-  \item{LOCATION}{Randomly generated strings indicating 45 different ward
+  \item{LOCATION}{Randomly generated strings indicating 4 different ward
     locations.}
 }
 }

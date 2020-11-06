@@ -92,7 +92,7 @@ GenEpisode <- function(dat, epiMethod = "Admininfo") {
   n_na <- sum(is.na(dat$RESULT.MEAN))
   if (n_na != 0) {
     message(simpleMessage(sprintf(
-      "%d rows with non-numeric glucose readings are removed.", n_na
+      "%d rows with non-numeric glucose readings are removed.\n", n_na
     )))
   }
   out <- dat[!is.na(RESULT.MEAN)]
