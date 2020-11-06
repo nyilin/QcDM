@@ -35,8 +35,8 @@
 #' @examples
 #' # Load example data
 #' data("gluDat")
-#' # Process date-time variable and blood glucose readings:
-#' gluDat2 <- FormatDate(dat = gluDat, yy = 2020, mm = 7)
+#' # Focus on data from Ward A. Process date-time variable and blood glucose readings:
+#' gluDat2 <- FormatDate(dat = gluDat[gluDat$LOCATION == "A", ], yy = 2020, mm = 7)
 #' # Specify admission episodes based on admission ID:
 #' gluDat3 <- GenEpisode(dat = gluDat2, epiMethod = "Admininfo")
 #' @author Chuen Seng Tan, Ying Chen

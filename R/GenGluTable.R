@@ -5,9 +5,9 @@
 #'   patient-days and patient-stays with glucose reading in pre-specified ranges,
 #'   and a vector containing footnotes to this table.
 #' @examples
-#' # First generate glucometrics using GenGluM:
+#' # Focus on data from Ward A. First generate glucometrics using GenGluM:
 #' data("gluDat")
-#' gluDat2 <- FormatDate(dat = gluDat, yy = 2020, mm = 7)
+#' gluDat2 <- FormatDate(dat = gluDat[gluDat$LOCATION == "A", ], yy = 2020, mm = 7)
 #' gluDat3 <- GenEpisode(dat = gluDat2, epiMethod = "Admininfo")
 #' metricList <- GenGluM(dat = gluDat3, hypocutoffs = c(4, 3, 2.5),
 #'                       hypercutoffs = c(14, 20, 24), normalrange = c(4, 10),

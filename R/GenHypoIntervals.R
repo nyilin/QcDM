@@ -10,9 +10,9 @@
 #' @param dat A \emph{data.table} prepared by \code{\link{GenEpisode}}.
 #' @return A \emph{list} containing the time intervals.
 #' @examples
-#' # First prepare example data using GenEpisode:
+#' # Focus on data from Ward A. First prepare example data using GenEpisode:
 #' data("gluDat")
-#' gluDat2 <- FormatDate(dat = gluDat, yy = 2020, mm = 7)
+#' gluDat2 <- FormatDate(dat = gluDat[gluDat$LOCATION == "A", ], yy = 2020, mm = 7)
 #' gluDat3 <- GenEpisode(dat = gluDat2, epiMethod = "Admininfo")
 #' # Then generate hypo intervals:
 #' GenHypoIntervals(dat = gluDat3)

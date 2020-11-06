@@ -53,10 +53,10 @@ The unit of measurement of glucose readings in the example data is mmol/L.
 
 Before generating glucometrics measurements, first process the date-time stamps
 of glucose readings, and identify glucose monitoring episodes based on the
-admission information in `ADMISSION.ID`:
+admission information in `ADMISSION.ID`. In this example, we focus on ward A.
 
 ```{r}
-gluDat2 <- FormatDate(dat = gluDat, yy = 2020, mm = 7)
+gluDat2 <- FormatDate(dat = gluDat[gluDat$LOCATION == "A", ], yy = 2020, mm = 7)
 gluDat3 <- GenEpisode(dat = gluDat2, epiMethod = "Admininfo")
 ```
 

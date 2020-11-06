@@ -45,11 +45,12 @@ mmol/L.
 
 Before generating glucometrics measurements, first process the date-time
 stamps of glucose readings, and identify glucose monitoring episodes
-based on the admission information in `ADMISSION.ID`:
+based on the admission information in `ADMISSION.ID`. In this example,
+we focus on ward A.
 
-    gluDat2 <- FormatDate(dat = gluDat, yy = 2020, mm = 7)
+    gluDat2 <- FormatDate(dat = gluDat[gluDat$LOCATION == "A", ], yy = 2020, mm = 7)
     gluDat3 <- GenEpisode(dat = gluDat2, epiMethod = "Admininfo")
-    ## 6 rows with non-numeric glucose readings are removed.
+    ## 3 rows with non-numeric glucose readings are removed.
 
 Then, generate basic glucometrics measurements using the following
 cutoffs as an example:
@@ -72,22 +73,22 @@ cutoffs as an example:
 
 |                                                                          | Patient-sample | Patient-day | Patient-stay |
 |--------------------------------------------------------------------------|:---------------|:------------|:-------------|
-| Number (count)                                                           | 4453           | 1133        | 100          |
-| Percent with glucose &gt;= hyper-cutoff1                                 | 326 (7.3%)     | 169 (14.9%) | 42 (42%)     |
-| Percent with glucose &gt;= hyper-cutoff2                                 | 64 (1.4%)      | 32 (2.8%)   | 9 (9%)       |
-| Percent with glucose &gt;= hyper-cutoff3                                 | 23 (0.5%)      | 11 (1%)     | 5 (5%)       |
-| Median HGI                                                               |                |             | 0.1 (1.1)    |
-| Mean HGI                                                                 |                |             | 0.9 (1.5)    |
-| Percent with glucose in normal range                                     | 3129 (70.3%)   | 886 (78.2%) | 76 (76%)     |
-| Median glucose                                                           | 7.7 (3.3)      | 7.6 (3.2)   | 7.7 (3.4)    |
-| Mean glucose                                                             | 8.5 (2.7)      | 8.2 (3)     | 8.3 (2.8)    |
-| Patient-day weighted median glucose                                      |                |             | 7.6 (3.3)    |
-| Patient-day weighted mean glucose                                        |                |             | 8.2 (2.7)    |
-| Percent with glucose &lt; hypo-cutoff1                                   | 151 (3.4%)     | 96 (8.5%)   | 34 (34%)     |
-| Percent with glucose &lt; hypo-cutoff2                                   | 24 (0.5%)      | 19 (1.7%)   | 7 (7%)       |
-| Percent with glucose &lt; hypo-cutoff3                                   | 8 (0.2%)       | 7 (0.6%)    | 4 (4%)       |
-| Percent of patient-stays with a recurrent hypoglycemia day (10-240 mins) |                |             | 6 (6%)       |
-| Median SD                                                                |                | 1.3 (1.6)   | 1.6 (1.7)    |
-| Mean SD                                                                  |                | 1.7 (1.3)   | 2.2 (1.5)    |
-| Median J-index                                                           |                | 28 (30.2)   | 30.4 (35.4)  |
-| Mean J-index                                                             |                | 37.3 (32.8) | 41.4 (31.4)  |
+| Number (count)                                                           | 600            | 141         | 15           |
+| Percent with glucose &gt;= hyper-cutoff1                                 | 56 (9.3%)      | 25 (17.7%)  | 6 (40%)      |
+| Percent with glucose &gt;= hyper-cutoff2                                 | 15 (2.5%)      | 7 (5%)      | 2 (13.3%)    |
+| Percent with glucose &gt;= hyper-cutoff3                                 | 8 (1.3%)       | 3 (2.1%)    | 1 (6.7%)     |
+| Median HGI                                                               |                |             | 0 (1.8)      |
+| Mean HGI                                                                 |                |             | 1.6 (2.7)    |
+| Percent with glucose in normal range                                     | 439 (73.2%)    | 110 (78%)   | 11 (73.3%)   |
+| Median glucose                                                           | 6.7 (4.9)      | 6.9 (4)     | 7 (4.9)      |
+| Mean glucose                                                             | 8.2 (4.1)      | 8.4 (4.2)   | 8.7 (4)      |
+| Patient-day weighted median glucose                                      |                |             | 7 (4.9)      |
+| Patient-day weighted mean glucose                                        |                |             | 8.7 (4)      |
+| Percent with glucose &lt; hypo-cutoff1                                   | 13 (2.2%)      | 10 (7.1%)   | 7 (46.7%)    |
+| Percent with glucose &lt; hypo-cutoff2                                   | 0 (0%)         | 0 (0%)      | 0 (0%)       |
+| Percent with glucose &lt; hypo-cutoff3                                   | 0 (0%)         | 0 (0%)      | 0 (0%)       |
+| Percent of patient-stays with a recurrent hypoglycemia day (10-240 mins) |                |             | 2 (13.3%)    |
+| Median SD                                                                |                | 1.2 (2)     | 2 (1.9)      |
+| Mean SD                                                                  |                | 1.6 (1.3)   | 2.4 (1.9)    |
+| Median J-index                                                           |                | 22.5 (37.9) | 31.2 (57.6)  |
+| Mean J-index                                                             |                | 41.5 (48.4) | 52 (50.2)    |

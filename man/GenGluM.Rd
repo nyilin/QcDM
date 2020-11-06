@@ -42,9 +42,9 @@ Generate glucometrics for specific ward/wards during specified
   time period
 }
 \examples{
-# First prepare example data using GenEpisode:
+# Focus on data from Ward A. First prepare example data using GenEpisode:
 data("gluDat")
-gluDat2 <- FormatDate(dat = gluDat, yy = 2020, mm = 7)
+gluDat2 <- FormatDate(dat = gluDat[gluDat$LOCATION == "A", ], yy = 2020, mm = 7)
 gluDat3 <- GenEpisode(dat = gluDat2, epiMethod = "Admininfo")
 # Then generate glucometrics:
 metricList <- GenGluM(dat = gluDat3, hypocutoffs = c(4, 3, 2.5),

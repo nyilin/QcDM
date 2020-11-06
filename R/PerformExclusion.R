@@ -17,9 +17,9 @@
 #' @return Returns a list with a vector of exclusion criteria and the
 #'   \emph{data.table} after applying exclusion criteria.
 #' @examples
-#' # First prepare data using GenEpisode:
+#' # Focus on data from Ward A. First prepare data using GenEpisode:
 #' data("gluDat")
-#' gluDat2 <- FormatDate(dat = gluDat, yy = 2020, mm = 7)
+#' gluDat2 <- FormatDate(dat = gluDat[gluDat$LOCATION == "A", ], yy = 2020, mm = 7)
 #' gluDat3 <- GenEpisode(dat = gluDat2, epiMethod = "Admininfo")
 #' # Create an "AGE" column with all values assigned to "AGE" to indicate that age
 #' # is not available in this data:
