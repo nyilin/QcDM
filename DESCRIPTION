@@ -1,12 +1,12 @@
 Package: QcDM
 Type: Package
 Title: Quality Control for patients with Diabetes Mellitus
-Version: 0.2.0
+Version: 0.3.0
 Author: Ying Chen, Yilin Ning, Mark Salloway, Chuen Seng Tan
 Maintainer: Ying Chen <yingc@u.nus.edu>
 Description: This R package is designed to produce glucometric report to assess inpatient quality control for patients with Diabetes Mellitus.
 License: SSHSPH ACADEMIC NON-COMMERCIAL SOFTWARE LICENSE AGREEMENT
-Depends: R (>= 3.5.0)
+Depends: R (>= 4.0.0)
 Imports: data.table
 LazyData: TRUE
 RoxygenNote: 7.1.1
