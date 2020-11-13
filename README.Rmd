@@ -8,7 +8,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE, collapse = TRUE)
 ```
 
-# QcDM: <ins>Q</ins>uality <ins>c</ins>are for <ins>D</ins>iabetes <ins>M</ins>ellitus
+# QcDM: **Q**uality **c**are for **D**iabetes **M**ellitus
 
 ## Overview
 
