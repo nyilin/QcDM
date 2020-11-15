@@ -46,7 +46,7 @@ GenEpisode <- function(dat, epiMethod = "Admininfo") {
   epiMethod <- tolower(epiMethod)
   epiMethod <- match.arg(epiMethod, c("admininfo", "pseudo"))
   dat <- data.table(dat)
-  dat <- unique(dat)
+  # dat <- unique(dat)
   setkey(dat, ADMISSION.ID, RESULT.DATE)
   dat[, LOS.EACH := c(0, diff(as.double(RESULT.DATE))) / 3600,
       by = list(ADMISSION.ID)] # Compute Time Difference for each observation of each patient
