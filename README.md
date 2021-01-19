@@ -72,7 +72,7 @@ cutoffs as an example:
     knitr::kable(ProGluTable(metricList = metricList, unitVal = 1)[[1]])
 
 |                                                                          | Patient-sample | Patient-day | Patient-stay |
-|--------------------------------------------------------------------------|:---------------|:------------|:-------------|
+|:-------------------------------------------------------------------------|:---------------|:------------|:-------------|
 | Number (count)                                                           | 600            | 141         | 15           |
 | Percent with glucose &gt;= hyper-cutoff1                                 | 56 (9.3%)      | 25 (17.7%)  | 6 (40%)      |
 | Percent with glucose &gt;= hyper-cutoff2                                 | 15 (2.5%)      | 7 (5%)      | 2 (13.3%)    |

@@ -135,7 +135,6 @@ ProGluTable <- function(metricList, unitVal){
   rownames(table1) <- rname
   colnames(table1) <- c("Patient-sample", "Patient-day", "Patient-stay")
   message <- c(
-    "*:The summary statistics of the glucometrics for patient-day means and patient-stay means.",
     paste0("#1: ",metricList[[2]]["NAinSD"]," (",
            round(metricList[[2]]["NAinSD"]/metricList[[2]]["FreqReading"]*100,2),
            "%) patient-days were removed for calculation of patient-day SD and J-index."),
