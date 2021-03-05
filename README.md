@@ -39,6 +39,13 @@ of the first 5 rows of the example data:
 
     library(QcDM)
     data("gluDat")
+    head(gluDat, 5)
+    ##   ADMISSION.ID RESULT      RESULT.DATE LOCATION
+    ## 1         8226    5.7 07/01/2020 00:07        D
+    ## 2         4194    6.3 07/01/2020 00:03        A
+    ## 3          143    3.6 07/01/2020 00:08        C
+    ## 4         6363     19 07/01/2020 00:06        C
+    ## 5         3931    8.8 07/01/2020 00:04        C
 
 The unit of measurement of glucose readings in the example data is
 mmol/L.

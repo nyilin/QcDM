@@ -47,6 +47,7 @@ the example data:
 ```{r}
 library(QcDM)
 data("gluDat")
+head(gluDat, 5)
 ```
 
 The unit of measurement of glucose readings in the example data is mmol/L.
