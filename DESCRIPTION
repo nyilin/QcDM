@@ -5,7 +5,7 @@ Version: 0.3.0
 Author: Ying Chen, Yilin Ning, Mark Salloway, Chuen Seng Tan
 Maintainer: Ying Chen <yingc@u.nus.edu>
 Description: This R package is designed to produce glucometric report to assess inpatient quality control for patients with Diabetes Mellitus.
-License: GPLv3
+License: MIT
 Depends: R (>= 3.6.0)
 Imports: data.table
 LazyData: TRUE
