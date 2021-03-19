@@ -6,7 +6,7 @@ Overview
 
 QcDM is an R package developed for generating glucometrics measures from
 point-of-care blood glucose data at three different units of analysis:
-patient-sample, patient-day, and patient-stay.
+patient-sample, patient-day, and patient-stay. This package is distributed under the [MIT license](LICENSE).
 
 This package is a part of the [QcDM
 Project](https://github.com/nyilin/QcDM_Project.git), which provides a
