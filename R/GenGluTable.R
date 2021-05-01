@@ -105,7 +105,7 @@ ProGluTable <- function(metricList, unitVal){
                   metricList[[3]][grepl("hgi3Q",names(metricList[[3]]))],
                   2*metricList[[3]][grepl("hgisd",names(metricList[[3]]))]),round_digits)
 
-  finc2 <- paste0(eC2, " (",cC2u - cC2l,")")
+  finc2 <- paste0(eC2, " (", round(cC2u - cC2l, digits = round_digits),")")
 
   recur <- paste0(
     metricList[[3]][grepl("RecurHypo",names(metricList[[3]]))],
@@ -123,7 +123,8 @@ ProGluTable <- function(metricList, unitVal){
     c(rep("",2),finc2[4]),# HGI median and mean
     matrix(paste0(HyperFreqNR, " (",round(HyperPropNR*100, round_digits_p),"%)"),
            nrow(HyperFreqNR),ncol(HyperFreqNR),byrow = FALSE)[4,], # normal range
-    c(paste0(c1_upd[1], " (", cC2u[1]-cC2l[1], ")"),finTab[1,]), # median
+    c(paste0(c1_upd[1], " (", round(cC2u[1]-cC2l[1], digits = round_digits), ")"),
+      finTab[1,]), # median
     c(paste0(c1_upd[2], " (", cC2l[2], ")"),finTab[2,]), # mean
     c(rep("",2),finc2[1]), # weighted median
     c(rep("",2),finc2[2]), # weighted mean

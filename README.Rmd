@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE, collapse = TRUE)
 
 QcDM is an R package developed for generating glucometrics measures from
 point-of-care blood glucose data at three different units of analysis:
-patient-sample, patient-day, and patient-stay.
+patient-sample, patient-day, and patient-stay. This package is distributed under the [MIT license](LICENSE).
 
 This package is a part of the 
 [QcDM Project](https://github.com/nyilin/QcDM_Project.git), 
@@ -40,8 +40,8 @@ install_github("nyilin/QcDM")
 ## Basic usage
 
 The QcDM package includes a simulated example data to illustrate its basic
-usage, which was generated for 10 hypothetical ward locations (indicated by
-letters A to J) in July 2020. The following is a preview of the first 5 rows of
+usage, which was generated for 4 hypothetical ward locations (indicated by
+letters A to D) in July 2020. The following is a preview of the first 5 rows of
 the example data:
 
 ```{r}
@@ -50,11 +50,17 @@ data("gluDat")
 head(gluDat, 5)
 ```
 
-The unit of measurement of glucose readings in the example data is mmol/L.
+The unit of measurement of glucose readings in the example data is mmol/L. Three
+BG readings were deliberately assigned non-numeric value to illustrate the
+functionality of the QcDM package to detect invalid data:
+
+```{r}
+gluDat[is.na(as.numeric(gluDat$RESULT)), ]
+```
 
 Before generating glucometrics measurements, first process the date-time stamps
 of glucose readings, and identify glucose monitoring episodes based on the
-admission information in `ADMISSION.ID`. In this example, we focus on ward A.
+admission information in `ADMISSION.ID`. In this example, we focus on ward A. 
 
 ```{r}
 gluDat2 <- FormatDate(dat = gluDat[gluDat$LOCATION == "A", ], yy = 2020, mm = 7)

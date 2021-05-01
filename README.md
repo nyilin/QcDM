@@ -4,7 +4,8 @@
 
 QcDM is an R package developed for generating glucometrics measures from
 point-of-care blood glucose data at three different units of analysis:
-patient-sample, patient-day, and patient-stay.
+patient-sample, patient-day, and patient-stay. This package is
+distributed under the [MIT license](LICENSE).
 
 This package is a part of the [QcDM
 Project](https://github.com/nyilin/QcDM_Project.git), which provides a
@@ -31,24 +32,36 @@ install_github("nyilin/QcDM")
 ## Basic usage
 
 The QcDM package includes a simulated example data to illustrate its
-basic usage, which was generated for 10 hypothetical ward locations
-(indicated by letters A to J) in July 2020. The following is a preview
+basic usage, which was generated for 4 hypothetical ward locations
+(indicated by letters A to D) in July 2020. The following is a preview
 of the first 5 rows of the example data:
 
 ``` r
 library(QcDM)
 data("gluDat")
 head(gluDat, 5)
-##   ADMISSION.ID RESULT      RESULT.DATE LOCATION
-## 1         8226    5.7 07/01/2020 00:07        D
-## 2         4194    6.3 07/01/2020 00:03        A
-## 3          143    3.6 07/01/2020 00:08        C
-## 4         6363     19 07/01/2020 00:06        C
-## 5         3931    8.8 07/01/2020 00:04        C
+##   ADMISSION.ID RESULT    RESULT.DATE LOCATION
+## 1            1   12.6 7/1/2020 03:13        A
+## 2            2   14.1 7/1/2020 03:15        B
+## 3            2    8.6 7/1/2020 06:43        B
+## 4            1   17.3 7/1/2020 11:56        A
+## 5            1   14.1 7/1/2020 12:26        A
 ```
 
 The unit of measurement of glucose readings in the example data is
-mmol/L.
+mmol/L. Three BG readings were deliberately assigned non-numeric value
+to illustrate the functionality of the QcDM package to detect invalid
+data:
+
+``` r
+gluDat[is.na(as.numeric(gluDat$RESULT)), ]
+## Warning in `[.data.frame`(gluDat, is.na(as.numeric(gluDat$RESULT)), ): NAs
+## introduced by coercion
+##      ADMISSION.ID RESULT     RESULT.DATE LOCATION
+## 2300           60   c7.7 7/16/2020 14:04        D
+## 4605           70   d9.6 7/24/2020 13:53        A
+## 5143           47   a4.4 7/26/2020 22:58        B
+```
 
 Before generating glucometrics measurements, first process the date-time
 stamps of glucose readings, and identify glucose monitoring episodes
@@ -58,7 +71,7 @@ we focus on ward A.
 ``` r
 gluDat2 <- FormatDate(dat = gluDat[gluDat$LOCATION == "A", ], yy = 2020, mm = 7)
 gluDat3 <- GenEpisode(dat = gluDat2, epiMethod = "Admininfo")
-## 3 rows with non-numeric glucose readings are removed.
+## 1 rows with non-numeric glucose readings are removed.
 ```
 
 Then, generate basic glucometrics measurements using the following
@@ -82,22 +95,22 @@ knitr::kable(ProGluTable(metricList = metricList, unitVal = 1)[[1]])
 
 |                                                            | Patient-sample | Patient-day | Patient-stay |
 |:-----------------------------------------------------------|:---------------|:------------|:-------------|
-| Number (count)                                             | 600            | 141         | 15           |
-| Percent with glucose &gt;= hyper-cutoff1                   | 56 (9.3%)      | 25 (17.7%)  | 6 (40%)      |
-| Percent with glucose &gt;= hyper-cutoff2                   | 15 (2.5%)      | 7 (5%)      | 2 (13.3%)    |
-| Percent with glucose &gt;= hyper-cutoff3                   | 8 (1.3%)       | 3 (2.1%)    | 1 (6.7%)     |
-| Median HGI                                                 |                |             | 0 (1.8)      |
-| Mean HGI                                                   |                |             | 1.6 (2.7)    |
-| Percent with glucose in normal range                       | 439 (73.2%)    | 110 (78%)   | 11 (73.3%)   |
-| Median glucose                                             | 6.7 (4.9)      | 6.9 (4)     | 7 (4.9)      |
-| Mean glucose                                               | 8.2 (4.1)      | 8.4 (4.2)   | 8.7 (4)      |
-| Patient-day weighted median glucose                        |                |             | 7 (4.9)      |
-| Patient-day weighted mean glucose                          |                |             | 8.7 (4)      |
-| Percent with glucose &lt; hypo-cutoff1                     | 13 (2.2%)      | 10 (7.1%)   | 7 (46.7%)    |
+| Number (count)                                             | 1610           | 316         | 29           |
+| Percent with glucose &gt;= hyper-cutoff1                   | 697 (43.3%)    | 292 (92.4%) | 29 (100%)    |
+| Percent with glucose &gt;= hyper-cutoff2                   | 61 (3.8%)      | 56 (17.7%)  | 23 (79.3%)   |
+| Percent with glucose &gt;= hyper-cutoff3                   | 5 (0.3%)       | 5 (1.6%)    | 4 (13.8%)    |
+| Median HGI                                                 |                |             | 3.5 (0.7)    |
+| Mean HGI                                                   |                |             | 3.6 (0.5)    |
+| Percent with glucose in normal range                       | 247 (15.3%)    | 6 (1.9%)    | 0 (0%)       |
+| Median glucose                                             | 13.2 (0.4)     | 13.6 (2)    | 13.5 (0.5)   |
+| Mean glucose                                               | 13.5 (0.5)     | 13.5 (1.7)  | 13.5 (0.5)   |
+| Patient-day weighted median glucose                        |                |             | 13.5 (0.4)   |
+| Patient-day weighted mean glucose                          |                |             | 13.5 (0.5)   |
+| Percent with glucose &lt; hypo-cutoff1                     | 1 (0.1%)       | 1 (0.3%)    | 1 (3.4%)     |
 | Percent with glucose &lt; hypo-cutoff2                     | 0 (0%)         | 0 (0%)      | 0 (0%)       |
 | Percent with glucose &lt; hypo-cutoff3                     | 0 (0%)         | 0 (0%)      | 0 (0%)       |
-| Percent of patient-stays with a recurrent hypoglycemia day |                |             | 2 (13.3%)    |
-| Median SD                                                  |                | 1.2 (2)     | 2 (1.9)      |
-| Mean SD                                                    |                | 1.6 (1.3)   | 2.4 (1.9)    |
-| Median J-index                                             |                | 22.5 (37.9) | 31.2 (57.6)  |
-| Mean J-index                                               |                | 41.5 (48.4) | 52 (50.2)    |
+| Percent of patient-stays with a recurrent hypoglycemia day |                |             | 0 (0%)       |
+| Median SD                                                  |                | 3.2 (1.6)   | 3.4 (0.5)    |
+| Mean SD                                                    |                | 3.3 (1.3)   | 3.5 (0.5)    |
+| Median J-index                                             |                | 90.8 (31)   | 92.6 (10.5)  |
+| Mean J-index                                               |                | 92.9 (24.2) | 92.8 (7.3)   |
