@@ -33,7 +33,8 @@ ProGluTable <- function(metricList, unitVal){
              paste("Percent with glucose < hypo-cutoff1"),
              paste("Percent with glucose < hypo-cutoff2"),
              paste("Percent with glucose < hypo-cutoff3"),
-             "Percent of patient-stays with a recurrent hypoglycemia day (10-240 mins)",
+             # "Percent of patient-stays with a recurrent hypoglycemia day (10-240 mins)",
+             "Percent of patient-stays with a recurrent hypoglycemia day",
              "Median SD", "Mean SD",
              "Median J-index", "Mean J-index")
   HyperFreqNR <- rbind(
