@@ -49,9 +49,9 @@ head(gluDat, 5)
 ```
 
 The unit of measurement of glucose readings in the example data is
-mmol/L. Three BG readings were deliberately assigned non-numeric value
-to illustrate the functionality of the QcDM package to detect invalid
-data:
+mmol/L. To illustrate how the software program developed in the QcDM
+Project handles non-numerical values, three entries had non-numerical
+values:
 
 ``` r
 gluDat[is.na(as.numeric(gluDat$RESULT)), ]
