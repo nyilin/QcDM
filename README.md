@@ -17,6 +17,10 @@ Users are strongly recommended to use QcDM via the R-Shiny interface.
 Sections below describes the installation of the package and its basic
 usage.
 
+## Citation
+
+Ying Chen, Yilin Ning, Prem Thomas, Mark Salloway, Maudrene Luor Shyuan Tan, E-Shyong Tai, Shih Ling Kao, Chuen Seng Tan, An open source tool to compute measures of inpatient glycemic control: translating from healthcare analytics research to clinical quality improvement, JAMIA Open, Volume 4, Issue 2, April 2021, ooab033, https://doi.org/10.1093/jamiaopen/ooab033
+
 ## Installation
 
 Package devtools is needed to install the QcDM package from Github:
